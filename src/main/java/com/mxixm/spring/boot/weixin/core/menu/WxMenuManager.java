@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -36,6 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 // 微信菜单管理器，实现ApplicationListener<ApplicationReadyEvent>接口，用于监听应用准备就绪事件，在事件回调中执行创建自定义菜单逻辑
+@Component
 public class WxMenuManager implements ApplicationListener<ApplicationReadyEvent> {
     // 获取日志记录器
     private static final Log logger = LogFactory.getLog(MethodHandles.lookup().lookupClass());
