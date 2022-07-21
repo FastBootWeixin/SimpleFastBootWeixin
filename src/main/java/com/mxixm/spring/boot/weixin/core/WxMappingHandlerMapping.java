@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -46,7 +45,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 // 标记为组件，顺序放在最前面，以有限支持微信事件请求
-@Order(Ordered.HIGHEST_PRECEDENCE)
 @Component
 public class WxMappingHandlerMapping extends AbstractHandlerMethodMapping<WxMappingInfo> {
     // 注入wx.path属性，只有这个路径的POST请求，才视为微信事件请求
@@ -184,4 +182,9 @@ public class WxMappingHandlerMapping extends AbstractHandlerMethodMapping<WxMapp
         return new WxMappingInfo(wxEventMapping.name(), wxRequestTypes, wxMessageTypes, wxEventTypes, null, null);
     }
 
+    @Override
+    public int getOrder() {
+        return Ordered.HIGHEST_PRECEDENCE;
+    }
+    
 }
