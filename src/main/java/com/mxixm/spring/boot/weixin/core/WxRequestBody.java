@@ -4,9 +4,17 @@ import com.mxixm.spring.boot.weixin.core.annotation.WxButton;
 import com.mxixm.spring.boot.weixin.core.annotation.WxEventMapping;
 import com.mxixm.spring.boot.weixin.core.annotation.WxMessageMapping;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Arrays;
 import java.util.Date;
 
+@XmlRootElement(name = "xml")
+@XmlAccessorType(XmlAccessType.NONE)
 public class WxRequestBody {
     // 具体事件请求体类型，按钮事件、消息事件、系统事件
     enum Type {
@@ -14,69 +22,92 @@ public class WxRequestBody {
     }
 
     // 开发者微信号
+    @XmlElement(name = "ToUserName", required = true)
     private String toUserName;
 
     // 发送方帐号（一个OpenID）
+    @XmlElement(name = "FromUserName", required = true)
     private String fromUserName;
 
     // 消息创建时间 （整型）
+    @XmlJavaTypeAdapter(CreateTimeAdaptor.class)
+    @XmlElement(name = "CreateTime", required = true)
     private Date createTime;
 
     // 消息类型
+    @XmlJavaTypeAdapter(MsgTypeAdaptor.class)
+    @XmlElement(name = "MsgType", required = true)
     private WxMessageMapping.Type messageType;
 
     // 事件请求体类型
     private Type type;
 
     // 事件类型
+    @XmlJavaTypeAdapter(EventAdaptor.class)
+    @XmlElement(name = "Event")
     private WxEventMapping.Type eventType;
 
     // 按钮类型
     private WxButton.Type buttonType;
 
     // 对事件请求体的eventKey
+    @XmlElement(name = "EventKey")
     private String eventKey;
 
     // 文本消息内容
+    @XmlElement(name = "Content")
     private String content;
 
     // 图片链接（由系统生成）
+    @XmlElement(name = "PicUrl")
     private String picUrl;
 
     // image、voice、video类型的消息有，消息媒体id，可以调用多媒体文件下载接口拉取数据。
+    @XmlElement(name = "MediaId")
     private String mediaId;
 
     // 语音格式，如amr，speex等
+    @XmlElement(name = "Format")
     private String format;
 
     // voice类型语音识别结果，UTF8编码
+    @XmlElement(name = "Recognition")
     private String recognition;
 
     // 视频消息缩略图的媒体id，可以调用多媒体文件下载接口拉取数据。
+    @XmlElement(name = "ThumbMediaId")
     private String thumbMediaId;
 
     // location消息地理位置维度
+    @XmlElement(name = "Location_X")
     private Double locationX;
 
     // location消息地理位置经度
+    @XmlElement(name = "Location_Y")
     private Double locationY;
 
     // location消息地图缩放大小
+    @XmlElement(name = "Scale")
     private Integer scale;
 
     // location消息地理位置信息
+    @XmlElement(name = "Label")
     private String label;
 
     // link消息标题
+    @XmlElement(name = "Title")
     private String title;
 
     // link消息描述
+    @XmlElement(name = "Description")
     private String description;
 
     // link消息链接
+    @XmlElement(name = "Url")
     private String url;
 
     // 消息id，64位整型
+    @XmlElement(name = "MsgId")
     private Long msgId;
 
     // button事件的类型
@@ -283,4 +314,47 @@ public class WxRequestBody {
     public void setMsgId(Long msgId) {
         this.msgId = msgId;
     }
+    /**
+     * 日期转换
+     */
+    public static class CreateTimeAdaptor extends XmlAdapter<Long, Date> {
+        @Override
+        public Date unmarshal(Long i) throws Exception {
+            return new Date(i * 1000);
+        }
+
+        @Override
+        public Long marshal(Date d) throws Exception {
+            return d.getTime() / 1000;
+        }
+    }
+
+    public static class MsgTypeAdaptor extends XmlAdapter<String, WxMessageMapping.Type> {
+        @Override
+        public WxMessageMapping.Type unmarshal(String s) {
+            return Arrays.stream(WxMessageMapping.Type.values())
+                    .filter(t -> t.name().equals(s.toUpperCase().trim()))
+                    .findFirst().orElse(null);
+        }
+
+        @Override
+        public String marshal(WxMessageMapping.Type type) throws Exception {
+            return type.name().toLowerCase();
+        }
+    }
+
+    public static class EventAdaptor extends XmlAdapter<String, Type> {
+        @Override
+        public Type unmarshal(String s) throws Exception {
+            return Arrays.stream(Type.values())
+                    .filter(t -> t.name().equals(s.toUpperCase().trim()))
+                    .findFirst().orElse(Type.EVENT);
+        }
+
+        @Override
+        public String marshal(Type type) throws Exception {
+            return type.name().toUpperCase();
+        }
+    }
+
 }
