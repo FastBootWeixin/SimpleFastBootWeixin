@@ -60,7 +60,7 @@ public class WxMessageReturnValueHandler implements HandlerMethodReturnValueHand
         // 设置请求体的from为返回消息体的to
         body.setToUser(wxRequestBody.getFromUserName());
         // 构造包含access_token的客服消息发送接口URL
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("https://api.weixin.qq.com/customservice/kfaccount/add")
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("https://api.weixin.qq.com/cgi-bin/message/custom/send")
                 .queryParam("access_token", wxAccessTokenManager.get());
         // 调用发送接口请求，把返回值作为消息体发送
         String result = restTemplate.postForObject(builder.toUriString(), returnValue, String.class);
