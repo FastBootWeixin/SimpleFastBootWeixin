@@ -20,6 +20,7 @@ import com.mxixm.spring.boot.weixin.core.WxAccessTokenManager;
 import com.mxixm.spring.boot.weixin.core.WxRequestBody;
 import com.mxixm.spring.boot.weixin.core.WxRequestUtils;
 import com.mxixm.spring.boot.weixin.core.annotation.WxEventMapping;
+import com.mxixm.spring.boot.weixin.core.annotation.WxMessageMapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -41,7 +42,7 @@ public class WxMessageReturnValueHandler implements HandlerMethodReturnValueHand
     @Override
     public boolean supportsReturnType(MethodParameter returnType) {
         // 仅支持标记了@WxEventMapping注解的事件方法，且返回值类型需要是WxMessage或其子类
-        return returnType.hasMethodAnnotation(WxEventMapping.class) &&
+        return (returnType.hasMethodAnnotation(WxEventMapping.class) || returnType.hasMethodAnnotation(WxMessageMapping.class)) &&
                 WxMessage.class.isAssignableFrom(returnType.getParameterType());
     }
     // 处理返回值的方法
@@ -61,7 +62,7 @@ public class WxMessageReturnValueHandler implements HandlerMethodReturnValueHand
         body.setToUser(wxRequestBody.getFromUserName());
         // 构造包含access_token的客服消息发送接口URL
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("https://api.weixin.qq.com/cgi-bin/message/custom/send")
-                .queryParam("access_token", wxAccessTokenManager.get());
+                .queryParam("access_token",     wxAccessTokenManager.get());
         // 调用发送接口请求，把返回值作为消息体发送
         String result = restTemplate.postForObject(builder.toUriString(), returnValue, String.class);
         // 记录请求调用结果
