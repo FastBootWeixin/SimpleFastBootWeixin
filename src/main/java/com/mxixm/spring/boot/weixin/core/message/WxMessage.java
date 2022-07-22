@@ -1,5 +1,7 @@
 package com.mxixm.spring.boot.weixin.core.message;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mxixm.spring.boot.weixin.core.annotation.WxMessageMapping;
 
 import java.util.Date;
@@ -7,12 +9,16 @@ import java.util.Date;
 // 消息的通用属性类型
 public class WxMessage {
     // 发送到的用户
+    @JsonProperty("touser")
     private String toUser;
     // 从哪个公众号发的
+    @JsonIgnore
     private String fromUser;
     // 创建时间
+    @JsonIgnore
     private Date createTime;
     // 消息类型
+    @JsonProperty("msgtype")
     private WxMessageMapping.Type msgType;
 
     public abstract static class Builder {
