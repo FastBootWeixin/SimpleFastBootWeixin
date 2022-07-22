@@ -343,16 +343,16 @@ public class WxRequestBody {
         }
     }
 
-    public static class EventAdaptor extends XmlAdapter<String, Type> {
+    public static class EventAdaptor extends XmlAdapter<String, WxEventMapping.Type> {
         @Override
-        public Type unmarshal(String s) throws Exception {
-            return Arrays.stream(Type.values())
+        public WxEventMapping.Type unmarshal(String s) throws Exception {
+            return Arrays.stream(WxEventMapping.Type.values())
                     .filter(t -> t.name().equals(s.toUpperCase().trim()))
-                    .findFirst().orElse(Type.EVENT);
+                    .findFirst().orElse(null);
         }
 
         @Override
-        public String marshal(Type type) throws Exception {
+        public String marshal(WxEventMapping.Type type) throws Exception {
             return type.name().toUpperCase();
         }
     }
